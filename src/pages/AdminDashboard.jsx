@@ -102,6 +102,18 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleDeleteUser = async (id) => {
+        if (window.confirm('Are you sure you want to delete this user?')) {
+            try {
+                await deleteUser(id);
+                toast.success('User deleted successfully');
+                fetchAllData();
+            } catch (error) {
+                toast.error('Error deleting user');
+            }
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -395,7 +407,9 @@ const AdminDashboard = () => {
                                                 <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">{new Date(u.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4">
                                                     {!u.isAdmin && (
-                                                        <button className="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50">
+                                                        <button 
+                                                            onClick={() => handleDeleteUser(u._id)}
+                                                            className="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50">
                                                             <FaTrash />
                                                         </button>
                                                     )}
