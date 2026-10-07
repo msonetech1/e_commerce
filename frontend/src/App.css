@@ -1,29 +1,7 @@
-/* Cleaned up default styles */
+/* Application Global Utility Overrides */
 #root {
   width: 100%;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

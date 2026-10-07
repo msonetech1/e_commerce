@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaShoppingCart, FaHeart, FaEye } from 'react-icons/fa';
+import { FaShoppingCart, FaShieldAlt, FaStar, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-hot-toast';
@@ -7,85 +7,111 @@ import { toast } from 'react-hot-toast';
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         addToCart(product);
-        toast.success(`${product.name} added to cart!`, {
-            style: {
-                borderRadius: '1rem',
-                background: '#111827',
-                color: '#fff',
-            },
-            iconTheme: {
-                primary: '#db2777',
-                secondary: '#fff',
-            },
-        });
+        toast.success(`${product.name} added to cart!`);
     };
 
     return (
-        <div className="group relative bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_20px_60px_-15px_rgba(219,39,119,0.2)] transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-800">
-            {/* Image Container */}
-            <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 dark:bg-gray-800">
-                <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                    onError={(e) => {
-                        console.error(`Failed to load image for ${product.name}: ${product.image}`);
-                        e.target.src = 'https://placehold.co/600x400?text=No+Image';
-                    }}
-                />
-
-                {/* Overlay Actions */}
-                <div className="absolute inset-0 bg-black/60 dark:bg-pink-900/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center space-x-4 backdrop-blur-sm transform translate-y-4 group-hover:translate-y-0">
-                    <button
-                        onClick={handleAddToCart}
-                        className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 rounded-2xl hover:bg-pink-600 hover:text-white dark:hover:bg-pink-600 transition-all duration-300 shadow-2xl transform hover:scale-110 active:scale-90"
-                    >
-                        <FaShoppingCart className="h-5 w-5" />
-                    </button>
-                    <Link to={`/product/${product._id}`} className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 rounded-2xl hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 transition-all duration-300 shadow-2xl transform hover:scale-110 active:scale-90">
-                        <FaEye className="h-5 w-5" />
-                    </Link>
-                </div>
-
-                {/* Badges */}
-                {product.isNew && (
-                    <div className="absolute top-6 left-6 bg-gradient-to-r from-pink-600 to-purple-600 text-white text-[10px] font-black px-4 py-2 rounded-full shadow-lg uppercase tracking-widest animate-bounce">
-                        New
-                    </div>
-                )}
-
-                <div className="absolute top-6 right-6 p-2 bg-white/10 backdrop-blur-md rounded-xl text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                    <FaHeart className="h-4 w-4 hover:text-pink-500 transition-colors cursor-pointer" />
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-8">
-                <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-400 uppercase tracking-[.2em]">{product.category || 'Accessories'}</h3>
-                    <div className="flex items-center space-x-1">
-                        <div className="flex text-amber-400 text-[10px]">
-                            {[...Array(5)].map((_, i) => (
-                                <span key={i}>★</span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <Link to={`/product/${product._id}`} className="block">
-                    <h2 className="text-gray-900 dark:text-white font-black text-xl mb-4 group-hover:text-pink-600 dark:group-hover:text-pink-500 transition-colors truncate uppercase tracking-tighter">
-                        {product.name}
-                    </h2>
+        <article className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800/90 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+            {/* Image & Badges Container */}
+            <div className="relative aspect-[4/3] bg-slate-100 dark:bg-slate-800/60 overflow-hidden">
+                <Link to={`/product/${product._id}`} tabIndex={-1} aria-hidden="true" className="block w-full h-full">
+                    <img
+                        src={product.image}
+                        alt={product.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
+                        onError={(e) => {
+                            e.target.src = 'https://placehold.co/600x450?text=Authentic+Device';
+                        }}
+                    />
                 </Link>
 
-                <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/50">
-                    <span className="text-lg font-black text-gray-900 dark:text-white tracking-widest">Tsh {product.price.toLocaleString()}</span>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-400 font-bold uppercase tracking-widest">Available</span>
+                {/* Status Badges */}
+                <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
+                    {product.isNew && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-600 text-white shadow-xs">
+                            New Release
+                        </span>
+                    )}
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-900/80 text-white backdrop-blur-xs">
+                        <FaShieldAlt className="w-2.5 h-2.5 text-emerald-400" />
+                        Verified
+                    </span>
+                </div>
+
+                {/* Category Pill */}
+                {product.category && (
+                    <div className="absolute bottom-3 left-3 pointer-events-none">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 backdrop-blur-xs border border-slate-200/50 dark:border-slate-750">
+                            {product.category}
+                        </span>
+                    </div>
+                )}
+            </div>
+
+            {/* Product Metadata & Actions */}
+            <div className="p-4 sm:p-5 flex flex-col flex-1">
+                {/* Rating & In-Stock indicator */}
+                <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-1 text-amber-500 text-xs">
+                        <FaStar className="w-3 h-3" />
+                        <span className="font-semibold text-slate-700 dark:text-slate-300 text-xs">4.9</span>
+                        <span className="text-slate-400 text-[11px]">(Verified)</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        In Stock
+                    </span>
+                </div>
+
+                {/* Title */}
+                <Link to={`/product/${product._id}`} className="group/title block">
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-1 group-hover/title:text-rose-600 dark:group-hover/title:text-rose-400 transition-colors">
+                        {product.name}
+                    </h3>
+                </Link>
+
+                {/* Subtitle / Description hint */}
+                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1 mb-4 flex-1">
+                    {product.description || 'Full manufacturer warranty included with certified genuine serial.'}
+                </p>
+
+                {/* Price & Purchase Actions */}
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                    <div>
+                        <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider block">
+                            Price
+                        </span>
+                        <span className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+                            Tsh {product.price?.toLocaleString()}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                        <Link
+                            to={`/product/${product._id}`}
+                            aria-label={`View details for ${product.name}`}
+                            className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            title="View Details"
+                        >
+                            <FaArrowRight className="w-3 h-3" />
+                        </Link>
+                        <button
+                            onClick={handleAddToCart}
+                            aria-label={`Add ${product.name} to cart`}
+                            className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+                        >
+                            <FaShoppingCart className="w-3 h-3" />
+                            <span className="hidden sm:inline">Add</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </article>
     );
 };
 

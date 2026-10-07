@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaSearch, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaTag, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { getProducts } from '../services/api';
 
@@ -10,41 +10,50 @@ const SearchModal = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(false);
     const inputRef = useRef(null);
 
+    // Escape key listener & focus management
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && isOpen) {
+                onClose();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
     useEffect(() => {
         if (isOpen) {
-            // Focus input when modal opens
             setTimeout(() => inputRef.current?.focus(), 100);
 
-            // Fetch products
             const fetchProducts = async () => {
                 setLoading(true);
                 try {
                     const { data } = await getProducts();
                     setProducts(data);
                 } catch (error) {
-                    console.error('Error fetching products:', error);
+                    console.error('Error fetching products for search:', error);
                 } finally {
                     setLoading(false);
                 }
             };
             fetchProducts();
         } else {
-            // Reset search when modal closes
             setSearchQuery('');
             setFilteredProducts([]);
         }
     }, [isOpen]);
 
     useEffect(() => {
-        if (searchQuery.trim() === '') {
+        if (!searchQuery.trim()) {
             setFilteredProducts([]);
             return;
         }
 
-        const query = searchQuery.toLowerCase();
-        const filtered = products.filter(product =>
-            product.name.toLowerCase().includes(query) ||
-            product.category.toLowerCase().includes(query) ||
+        const query = searchQuery.toLowerCase().trim();
+        const filtered = products.filter((product) =>
+            product.name?.toLowerCase().includes(query) ||
+            product.category?.toLowerCase().includes(query) ||
             product.description?.toLowerCase().includes(query)
         );
         setFilteredProducts(filtered);
@@ -55,115 +64,142 @@ const SearchModal = ({ isOpen, onClose }) => {
         setSearchQuery('');
     };
 
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(price);
-    };
-
     if (!isOpen) return null;
 
     return (
-        <>
+        <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Search Catalog">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300"
+                className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
-            {/* Modal */}
-            <div className="fixed inset-x-0 top-0 z-50 flex justify-center pt-20 px-4">
-                <div className="w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden animate-slideDown">
-                    {/* Search Input */}
-                    <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-                        <div className="relative">
-                            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search products by name, category, or description..."
-                                className="w-full pl-12 pr-12 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
-                            />
-                            <button
-                                onClick={onClose}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-500 hover:text-red-500 transition-all"
-                            >
-                                <FaTimes className="h-4 w-4" />
-                            </button>
-                        </div>
+            {/* Modal Box */}
+            <div className="min-h-screen px-4 text-center flex items-start justify-center pt-20 sm:pt-24 pb-12">
+                <div
+                    className="inline-block w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl text-left shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform transition-all animate-slide-down relative z-10"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {/* Search Input Bar */}
+                    <div className="relative border-b border-slate-200 dark:border-slate-800 p-4 sm:p-5">
+                        <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search smartphones, specifications, accessories..."
+                            aria-label="Search catalog"
+                            className="w-full pl-9 pr-12 py-2 text-sm sm:text-base bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
+                        />
+                        <button
+                            onClick={onClose}
+                            aria-label="Close search"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            <FaTimes className="w-4 h-4" />
+                        </button>
                     </div>
 
-                    {/* Results */}
-                    <div className="max-h-[60vh] overflow-y-auto">
+                    {/* Results or Suggestions Container */}
+                    <div className="max-h-[60vh] overflow-y-auto p-4 sm:p-5">
                         {loading ? (
-                            <div className="flex items-center justify-center py-20">
-                                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-pink-600"></div>
+                            <div className="py-12 flex flex-col items-center justify-center text-slate-400">
+                                <div className="w-6 h-6 border-2 border-slate-300 border-t-rose-600 rounded-full animate-spin mb-3" />
+                                <span className="text-xs">Accessing inventory...</span>
                             </div>
                         ) : searchQuery.trim() === '' ? (
-                            <div className="text-center py-20 px-6">
-                                <FaSearch className="h-16 w-16 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
-                                <p className="text-gray-400 dark:text-gray-600 font-medium">
-                                    Start typing to search for products
+                            <div className="py-8 text-center">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">
+                                    Popular Categories
                                 </p>
+                                <div className="flex flex-wrap justify-center gap-2">
+                                    {['Flagship', 'Foldable', 'Budget', 'Mid-range'].map((cat) => (
+                                        <button
+                                            key={cat}
+                                            onClick={() => setSearchQuery(cat)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                        >
+                                            <FaTag className="w-2.5 h-2.5 text-slate-400" />
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         ) : filteredProducts.length > 0 ? (
-                            <div className="p-4 space-y-2">
+                            <div className="space-y-2">
+                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 mb-2">
+                                    Matching Results ({filteredProducts.length})
+                                </p>
                                 {filteredProducts.map((product) => (
                                     <Link
                                         key={product._id}
-                                        to={`/products/${product._id}`}
+                                        to={`/product/${product._id}`}
                                         onClick={handleProductClick}
-                                        className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all group border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/70 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all group"
                                     >
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="w-16 h-16 object-cover rounded-xl shadow-md group-hover:shadow-lg transition-shadow"
-                                        />
+                                        <div className="w-14 h-14 bg-slate-150 dark:bg-slate-800 rounded-lg overflow-hidden flex-shrink-0 border border-slate-100 dark:border-slate-750">
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    e.target.src = 'https://placehold.co/100x100?text=Phone';
+                                                }}
+                                            />
+                                        </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-bold text-gray-900 dark:text-white truncate group-hover:text-pink-600 transition-colors">
-                                                {product.name}
-                                            </h3>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                                {product.category}
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                                                    {product.name}
+                                                </h3>
+                                                {product.category && (
+                                                    <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex-shrink-0">
+                                                        {product.category}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                                {product.description || 'Authentic certified device with official warranty.'}
                                             </p>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="font-black text-pink-600">
-                                                {formatPrice(product.price)}
-                                            </p>
+                                        <div className="text-right flex-shrink-0 pl-2">
+                                            <span className="text-sm font-bold text-slate-900 dark:text-white block">
+                                                Tsh {product.price?.toLocaleString()}
+                                            </span>
+                                            <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400 flex items-center justify-end gap-1 mt-0.5 group-hover:translate-x-0.5 transition-transform">
+                                                View <FaArrowRight className="w-2.5 h-2.5" />
+                                            </span>
                                         </div>
                                     </Link>
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-20 px-6">
-                                <div className="text-6xl mb-4">😕</div>
-                                <p className="text-gray-400 dark:text-gray-600 font-medium mb-2">
-                                    No products found
+                            <div className="py-12 text-center">
+                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    No products matching &ldquo;{searchQuery}&rdquo;
                                 </p>
-                                <p className="text-sm text-gray-400 dark:text-gray-600">
-                                    Try searching with different keywords
+                                <p className="text-xs text-slate-400 mt-1">
+                                    Try checking for typos or searching by category (Flagship, Foldable, Budget).
                                 </p>
                             </div>
                         )}
                     </div>
 
                     {/* Footer */}
-                    {filteredProducts.length > 0 && (
-                        <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 text-center font-medium">
-                                Found {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
-                            </p>
-                        </div>
-                    )}
+                    <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between text-xs text-slate-400">
+                        <span>Press <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded font-mono text-[10px]">ESC</kbd> to close</span>
+                        <Link
+                            to="/products"
+                            onClick={handleProductClick}
+                            className="font-medium text-rose-600 dark:text-rose-400 hover:underline"
+                        >
+                            Browse Full Catalog
+                        </Link>
+                    </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

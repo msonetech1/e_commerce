@@ -2,45 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100vh;
-}
-
-body {
-  transition: background-color 0.5s ease, color 0.5s ease;
-  background-color: #f9fafb;
-  /* gray-50 */
-  color: #111827;
-  /* gray-900 */
-}
-
-/* When the .dark class is on html or body */
-.dark body {
-  background-color: #030712 !important;
-  /* Premium deep charcoal */
-  color: #f1f5f9 !important;
-  /* Lighter slate-50 equivalent for text */
-}
-
-.dark {
-  color-scheme: dark;
-}
-
 @layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
   body {
-    @apply transition-colors duration-500;
+    background-color: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body {
+    background-color: #020617;
+    color: #f8fafc;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #e11d48;
+    outline-offset: 2px;
   }
 }
 
-/* Custom scrollbar */
+/* Slim elegant custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #334155;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #475569;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -50,19 +68,33 @@ body {
   scrollbar-width: none;
 }
 
-/* Search modal animation */
-@keyframes slideDown {
+/* Micro-animations */
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(6px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.animate-slideDown {
-  animation: slideDown 0.3s ease-out;
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

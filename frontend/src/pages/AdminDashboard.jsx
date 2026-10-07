@@ -1,16 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import {
-    FaBox, FaShoppingCart, FaUsers, FaChartLine, FaPlus,
-    FaTrash, FaEdit, FaCheck, FaTimes, FaSignOutAlt, FaChevronRight,
-    FaRegClock, FaCheckCircle, FaTruck, FaBars
+    FaBox,
+    FaShoppingCart,
+    FaUsers,
+    FaChartLine,
+    FaPlus,
+    FaTrash,
+    FaEdit,
+    FaSignOutAlt,
+    FaChevronRight,
+    FaBars,
+    FaTimes,
+    FaShieldAlt,
+    FaEye
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
-    getStats, getProducts, getOrders, getUsers,
-    createProduct, updateProduct, deleteProduct,
-    updateOrderStatus, deleteUser
+    getStats,
+    getProducts,
+    getOrders,
+    getUsers,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    updateOrderStatus,
+    deleteUser
 } from '../services/api';
 
 const AdminDashboard = () => {
@@ -33,7 +49,11 @@ const AdminDashboard = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [editingProduct, setEditingProduct] = useState(null);
     const [productForm, setProductForm] = useState({
-        name: '', price: '', image: '', category: '', description: ''
+        name: '',
+        price: '',
+        image: '',
+        category: '',
+        description: ''
     });
 
     useEffect(() => {
@@ -48,7 +68,10 @@ const AdminDashboard = () => {
         setLoading(true);
         try {
             const [statsRes, prodRes, orderRes, userRes] = await Promise.all([
-                getStats(), getProducts(), getOrders(), getUsers()
+                getStats(),
+                getProducts(),
+                getOrders(),
+                getUsers()
             ]);
             setStats(statsRes.data);
             setProducts(prodRes.data);
@@ -75,7 +98,7 @@ const AdminDashboard = () => {
             setEditingProduct(null);
             setProductForm({ name: '', price: '', image: '', category: '', description: '' });
             fetchAllData();
-        } catch (error) {
+        } catch {
             toast.error('Error saving product');
         }
     };
@@ -86,7 +109,7 @@ const AdminDashboard = () => {
                 await deleteProduct(id);
                 toast.success('Product deleted successfully');
                 fetchAllData();
-            } catch (error) {
+            } catch {
                 toast.error('Error deleting product');
             }
         }
@@ -97,7 +120,7 @@ const AdminDashboard = () => {
             await updateOrderStatus(id, status);
             toast.success(`Order status updated to ${status}`);
             fetchAllData();
-        } catch (error) {
+        } catch {
             toast.error('Error updating status');
         }
     };
@@ -108,7 +131,7 @@ const AdminDashboard = () => {
                 await deleteUser(id);
                 toast.success('User deleted successfully');
                 fetchAllData();
-            } catch (error) {
+            } catch {
                 toast.error('Error deleting user');
             }
         }
@@ -116,79 +139,112 @@ const AdminDashboard = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-600"></div>
+            <div className="flex items-center justify-center min-h-screen pt-20">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-slate-300 border-t-rose-600 rounded-full animate-spin" />
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Loading back-office management console...</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors duration-500">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors">
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-20 md:hidden"
+                    className="fixed inset-0 bg-slate-900/60 z-30 md:hidden backdrop-blur-xs"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed top-0 left-0 z-30 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 ease-in-out pt-20 flex flex-col
-                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-            `}>
-                <div className="p-4 flex-1">
+            <aside
+                className={`fixed top-0 left-0 z-40 h-full w-64 bg-white dark:bg-slate-900 border-r border-slate-200/90 dark:border-slate-800 transition-transform duration-300 ease-in-out pt-20 flex flex-col ${
+                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+                }`}
+            >
+                <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                    <FaShieldAlt className="w-4 h-4 text-rose-600" />
+                    <div>
+                        <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider block">
+                            Administration
+                        </span>
+                        <span className="text-[10px] text-slate-400">Inventory &amp; Operations</span>
+                    </div>
+                </div>
+
+                <div className="p-3 flex-1 overflow-y-auto">
                     <nav className="space-y-1">
-                        <button
-                            onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }}
-                            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'overview' ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-600' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
-                        >
-                            <FaChartLine className="mr-3" /> Overview
-                        </button>
-                        <button
-                            onClick={() => { setActiveTab('products'); setIsSidebarOpen(false); }}
-                            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'products' ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-600' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
-                        >
-                            <FaBox className="mr-3" /> Products
-                        </button>
-                        <button
-                            onClick={() => { setActiveTab('orders'); setIsSidebarOpen(false); }}
-                            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'orders' ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-600' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
-                        >
-                            <FaShoppingCart className="mr-3" /> Orders
-                        </button>
-                        <button
-                            onClick={() => { setActiveTab('users'); setIsSidebarOpen(false); }}
-                            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'users' ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-600' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
-                        >
-                            <FaUsers className="mr-3" /> Customers
-                        </button>
+                        {[
+                            { id: 'overview', name: 'Overview & Analytics', icon: FaChartLine },
+                            { id: 'products', name: 'Hardware Catalog', icon: FaBox },
+                            { id: 'orders', name: 'Customer Orders', icon: FaShoppingCart },
+                            { id: 'users', name: 'Registered Users', icon: FaUsers }
+                        ].map((tab) => {
+                            const Icon = tab.icon;
+                            const isActive = activeTab === tab.id;
+
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => {
+                                        setActiveTab(tab.id);
+                                        setIsSidebarOpen(false);
+                                    }}
+                                    className={`w-full flex items-center px-3.5 py-2.5 text-xs font-semibold rounded-lg transition-colors text-left ${
+                                        isActive
+                                            ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300'
+                                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    <Icon className={`mr-3 w-4 h-4 ${isActive ? 'text-rose-600' : 'text-slate-400'}`} />
+                                    <span>{tab.name}</span>
+                                </button>
+                            );
+                        })}
                     </nav>
                 </div>
-                <div className="p-4 border-t border-gray-100 dark:border-gray-800">
+
+                <div className="p-4 border-t border-slate-100 dark:border-slate-800">
                     <button
                         onClick={logout}
-                        className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 dark:text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                        className="w-full flex items-center px-3.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors"
                     >
-                        <FaSignOutAlt className="mr-3" /> Logout
+                        <FaSignOutAlt className="mr-3 w-3.5 h-3.5" /> Log Out of Admin
                     </button>
                 </div>
             </aside>
 
-            {/* Main Content Wrapper */}
-            <div className="flex-1 md:ml-64 flex flex-col min-h-screen transition-all duration-300">
-                {/* Main Content */}
-                <main className="flex-1 p-4 md:p-8 lg:p-10 xl:p-12 pt-24 md:pt-28">
-                    {/* Header */}
-                    <div className="flex justify-between items-center mb-8">
-                        <div className="flex items-center gap-4">
+            {/* Main Content Area */}
+            <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
+                <main className="flex-1 p-4 sm:p-6 lg:p-8 pt-24 md:pt-28">
+                    {/* Header Bar */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200/80 dark:border-slate-800/80">
+                        <div className="flex items-center gap-3">
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
-                                className="md:hidden p-2 -ml-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                                aria-label="Open sidebar"
+                                className="md:hidden p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
                             >
-                                <FaBars className="text-xl" />
+                                <FaBars className="w-5 h-5" />
                             </button>
-                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white capitalize">{activeTab}</h2>
+                            <div>
+                                <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider block">
+                                    Portal Module
+                                </span>
+                                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white capitalize">
+                                    {activeTab === 'overview'
+                                        ? 'Operations Overview'
+                                        : activeTab === 'products'
+                                        ? 'Catalog Management'
+                                        : activeTab === 'orders'
+                                        ? 'Order Management'
+                                        : 'User Directory'}
+                                </h1>
+                            </div>
                         </div>
+
                         {activeTab === 'products' && (
                             <button
                                 onClick={() => {
@@ -196,73 +252,125 @@ const AdminDashboard = () => {
                                     setProductForm({ name: '', price: '', image: '', category: '', description: '' });
                                     setIsProductModalOpen(true);
                                 }}
-                                className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 md:px-6 py-2 rounded-xl font-bold text-sm md:text-base flex items-center hover:bg-black dark:hover:bg-gray-100 transition-all"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
                             >
-                                <FaPlus className="mr-2" /> <span className="hidden sm:inline">Add Product</span><span className="sm:hidden">Add</span>
+                                <FaPlus className="w-3 h-3" />
+                                <span>Add New Device</span>
                             </button>
                         )}
                     </div>
 
-
-                    {/* Content Tabs */}
+                    {/* OVERVIEW TAB */}
                     {activeTab === 'overview' && (
                         <div className="space-y-8">
-                            {/* Stats Cards */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
-                                <div className="bg-white dark:bg-gray-900 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl w-fit mb-4"><FaShoppingCart /></div>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Orders</p>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.totalOrders}</h3>
+                            {/* Stats Metric Cards */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                                <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+                                    <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
+                                        <FaShoppingCart className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
+                                        Recorded Orders
+                                    </span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white block">
+                                        {stats?.totalOrders || 0}
+                                    </span>
                                 </div>
-                                <div className="bg-white dark:bg-gray-900 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-xl w-fit mb-4"><FaChartLine /></div>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Revenue</p>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Tsh {stats?.revenue.toLocaleString()}</h3>
+
+                                <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+                                    <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center">
+                                        <FaChartLine className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
+                                        Gross Volume
+                                    </span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white block">
+                                        Tsh {(stats?.revenue || 0).toLocaleString()}
+                                    </span>
                                 </div>
-                                <div className="bg-white dark:bg-gray-900 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                                    <div className="p-3 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl w-fit mb-4"><FaBox /></div>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Active Products</p>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.totalProducts}</h3>
+
+                                <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+                                    <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center">
+                                        <FaBox className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
+                                        Live Devices
+                                    </span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white block">
+                                        {stats?.totalProducts || 0}
+                                    </span>
                                 </div>
-                                <div className="bg-white dark:bg-gray-900 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                                    <div className="p-3 bg-pink-50 dark:bg-pink-900/20 text-pink-600 rounded-xl w-fit mb-4"><FaUsers /></div>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Registered Users</p>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.totalUsers}</h3>
+
+                                <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2">
+                                    <div className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center">
+                                        <FaUsers className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
+                                        Registered Accounts
+                                    </span>
+                                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white block">
+                                        {stats?.totalUsers || 0}
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Recent Orders Table */}
-                            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-                                <div className="p-4 md:p-6 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center">
-                                    <h3 className="font-bold text-gray-900 dark:text-white">Recent Orders</h3>
-                                    <button onClick={() => setActiveTab('orders')} className="text-pink-600 text-sm font-bold flex items-center hover:underline">
-                                        View All <FaChevronRight className="ml-1 text-[10px]" />
+                            {/* Recent Orders Overview Table */}
+                            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
+                                <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                        Recent Orders
+                                    </h3>
+                                    <button
+                                        onClick={() => setActiveTab('orders')}
+                                        className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1"
+                                    >
+                                        <span>View All Orders</span>
+                                        <FaChevronRight className="w-2.5 h-2.5" />
                                     </button>
                                 </div>
+
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-left">
-                                        <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs uppercase font-bold">
+                                    <table className="w-full text-left text-xs">
+                                        <thead className="bg-slate-50 dark:bg-slate-850 text-slate-500 dark:text-slate-400 uppercase font-semibold">
                                             <tr>
-                                                <th className="px-6 py-4">Order ID</th>
-                                                <th className="px-6 py-4 hidden md:table-cell">Customer</th>
-                                                <th className="px-6 py-4 hidden sm:table-cell">Date</th>
-                                                <th className="px-6 py-4">Total</th>
-                                                <th className="px-6 py-4">Status</th>
+                                                <th className="px-5 py-3">Order Ref</th>
+                                                <th className="px-5 py-3 hidden md:table-cell">Customer</th>
+                                                <th className="px-5 py-3 hidden sm:table-cell">Date</th>
+                                                <th className="px-5 py-3">Total</th>
+                                                <th className="px-5 py-3">Status</th>
+                                                <th className="px-5 py-3 text-right">Details</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                            {orders.slice(0, 5).map(order => (
-                                                <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                                    <td className="px-6 py-4 text-sm font-mono text-gray-500 dark:text-gray-400">#{order._id.slice(-6).toUpperCase()}</td>
-                                                    <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white hidden md:table-cell">{order.user?.name || 'Guest'}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                                    <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">Tsh {order.totalPrice.toLocaleString()}</td>
-                                                    <td className="px-6 py-4">
-                                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'Completed' ? 'bg-green-100 text-green-600' :
-                                                            order.status === 'Shipping' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'
-                                                            }`}>
+                                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                            {orders.slice(0, 5).map((order) => (
+                                                <tr key={order._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                                                    <td className="px-5 py-3 font-mono font-bold text-slate-900 dark:text-white">
+                                                        #{order._id?.slice(-6).toUpperCase()}
+                                                    </td>
+                                                    <td className="px-5 py-3 hidden md:table-cell text-slate-700 dark:text-slate-300">
+                                                        {order.user?.name || 'Guest Buyer'}
+                                                    </td>
+                                                    <td className="px-5 py-3 hidden sm:table-cell text-slate-500">
+                                                        {new Date(order.createdAt).toLocaleDateString()}
+                                                    </td>
+                                                    <td className="px-5 py-3 font-semibold text-slate-900 dark:text-white">
+                                                        Tsh {order.totalPrice?.toLocaleString()}
+                                                    </td>
+                                                    <td className="px-5 py-3">
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                                             {order.status}
                                                         </span>
+                                                    </td>
+                                                    <td className="px-5 py-3 text-right">
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedOrder(order);
+                                                                setIsOrderModalOpen(true);
+                                                            }}
+                                                            className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline"
+                                                        >
+                                                            Inspect
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -273,46 +381,69 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
+                    {/* PRODUCTS TAB */}
                     {activeTab === 'products' && (
-                        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs uppercase font-bold">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-slate-50 dark:bg-slate-850 text-slate-500 dark:text-slate-400 uppercase font-semibold">
                                         <tr>
-                                            <th className="px-6 py-4">Product</th>
-                                            <th className="px-6 py-4 hidden md:table-cell">Category</th>
-                                            <th className="px-6 py-4">Price</th>
-                                            <th className="px-6 py-4">Actions</th>
+                                            <th className="px-5 py-3">Device Name</th>
+                                            <th className="px-5 py-3">Category</th>
+                                            <th className="px-5 py-3">Price</th>
+                                            <th className="px-5 py-3 text-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                        {products.map(product => (
-                                            <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center">
-                                                        <img src={product.image} className="w-10 h-10 rounded-lg object-cover mr-3 bg-gray-50 dark:bg-gray-800" alt="" />
-                                                        <span className="font-bold text-gray-900 dark:text-white">{product.name}</span>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                        {products.map((product) => (
+                                            <tr key={product._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                                                <td className="px-5 py-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <img
+                                                            src={product.image}
+                                                            alt={product.name}
+                                                            className="w-10 h-10 rounded-lg object-cover bg-slate-100 border border-slate-200 dark:border-slate-700"
+                                                            onError={(e) => {
+                                                                e.target.src = 'https://placehold.co/100x100?text=Device';
+                                                            }}
+                                                        />
+                                                        <div>
+                                                            <span className="font-bold text-slate-900 dark:text-white block">
+                                                                {product.name}
+                                                            </span>
+                                                            <span className="text-[11px] text-slate-400 line-clamp-1 max-w-xs">
+                                                                {product.description}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{product.category}</td>
-                                                <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">Tsh {product.price.toLocaleString()}</td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex space-x-2">
+                                                <td className="px-5 py-3">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                                        {product.category || 'Hardware'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-5 py-3 font-semibold text-slate-900 dark:text-white">
+                                                    Tsh {product.price?.toLocaleString()}
+                                                </td>
+                                                <td className="px-5 py-3 text-right">
+                                                    <div className="flex items-center justify-end gap-1.5">
                                                         <button
                                                             onClick={() => {
                                                                 setEditingProduct(product);
                                                                 setProductForm(product);
                                                                 setIsProductModalOpen(true);
                                                             }}
-                                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                            className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                                            title="Edit Device"
                                                         >
-                                                            <FaEdit />
+                                                            <FaEdit className="w-3.5 h-3.5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteProduct(product._id)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                            className="p-1.5 text-slate-400 hover:text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                                            title="Delete Device"
                                                         >
-                                                            <FaTrash />
+                                                            <FaTrash className="w-3.5 h-3.5" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -324,54 +455,69 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
+                    {/* ORDERS TAB */}
                     {activeTab === 'orders' && (
-                        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs uppercase font-bold">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-slate-50 dark:bg-slate-850 text-slate-500 dark:text-slate-400 uppercase font-semibold">
                                         <tr>
-                                            <th className="px-6 py-4">Order</th>
-                                            <th className="px-6 py-4 hidden md:table-cell">Customer</th>
-                                            <th className="px-6 py-4 hidden sm:table-cell">Items</th>
-                                            <th className="px-6 py-4">Total</th>
-                                            <th className="px-6 py-4">Status</th>
-                                            <th className="px-6 py-4">Action</th>
+                                            <th className="px-5 py-3">Order Ref</th>
+                                            <th className="px-5 py-3 hidden md:table-cell">Customer</th>
+                                            <th className="px-5 py-3 hidden sm:table-cell">Items</th>
+                                            <th className="px-5 py-3">Total</th>
+                                            <th className="px-5 py-3">Status</th>
+                                            <th className="px-5 py-3 text-right">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                        {orders.map(order => (
-                                            <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm font-mono font-bold text-gray-900 dark:text-white">#{order._id.slice(-6).toUpperCase()}</div>
-                                                    <div className="text-xs text-gray-400 dark:text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                        {orders.map((order) => (
+                                            <tr key={order._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                                                <td className="px-5 py-3">
+                                                    <span className="font-mono font-bold text-slate-900 dark:text-white block">
+                                                        #{order._id?.slice(-6).toUpperCase()}
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-400">
+                                                        {new Date(order.createdAt).toLocaleDateString()}
+                                                    </span>
                                                 </td>
-                                                <td className="px-6 py-4 hidden md:table-cell">
-                                                    <div className="text-sm font-bold text-gray-900 dark:text-white">{order.user?.name || 'Guest'}</div>
-                                                    <div className="text-xs text-gray-500 dark:text-gray-400">{order.user?.email}</div>
+                                                <td className="px-5 py-3 hidden md:table-cell">
+                                                    <span className="font-bold text-slate-900 dark:text-white block">
+                                                        {order.user?.name || 'Guest'}
+                                                    </span>
+                                                    <span className="text-[11px] text-slate-400">
+                                                        {order.user?.email}
+                                                    </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">{order.orderItems.length} items</td>
-                                                <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">Tsh {order.totalPrice.toLocaleString()}</td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center space-x-2">
-                                                        <select
-                                                            value={order.status}
-                                                            onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                                                            className={`text-xs font-bold px-2 py-1 rounded-lg outline-none cursor-pointer border-none ${order.status === 'Completed' ? 'bg-green-100 text-green-600' :
-                                                                order.status === 'Shipping' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'
-                                                                }`}
-                                                        >
-                                                            <option value="Pending">Pending</option>
-                                                            <option value="Shipping">Shipping</option>
-                                                            <option value="Completed">Completed</option>
-                                                            <option value="Cancelled">Cancelled</option>
-                                                        </select>
-                                                    </div>
+                                                <td className="px-5 py-3 hidden sm:table-cell text-slate-600 dark:text-slate-400">
+                                                    {order.orderItems?.length || 0} unit(s)
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <button onClick={() => {
-                                                        setSelectedOrder(order);
-                                                        setIsOrderModalOpen(true);
-                                                    }} className="text-xs font-bold text-pink-600 hover:underline">View Details</button>
+                                                <td className="px-5 py-3 font-semibold text-slate-900 dark:text-white">
+                                                    Tsh {order.totalPrice?.toLocaleString()}
+                                                </td>
+                                                <td className="px-5 py-3">
+                                                    <select
+                                                        value={order.status}
+                                                        onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
+                                                        className="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-xs font-semibold focus:outline-none cursor-pointer text-slate-900 dark:text-white"
+                                                    >
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="Shipping">Shipping</option>
+                                                        <option value="Completed">Completed</option>
+                                                        <option value="Cancelled">Cancelled</option>
+                                                    </select>
+                                                </td>
+                                                <td className="px-5 py-3 text-right">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedOrder(order);
+                                                            setIsOrderModalOpen(true);
+                                                        }}
+                                                        className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline"
+                                                    >
+                                                        <FaEye className="w-3 h-3" />
+                                                        <span>Inspect</span>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -381,36 +527,51 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
+                    {/* USERS TAB */}
                     {activeTab === 'users' && (
-                        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+                        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs uppercase font-bold">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-slate-50 dark:bg-slate-850 text-slate-500 dark:text-slate-400 uppercase font-semibold">
                                         <tr>
-                                            <th className="px-6 py-4">Name</th>
-                                            <th className="px-6 py-4 hidden md:table-cell">Email</th>
-                                            <th className="px-6 py-4">Role</th>
-                                            <th className="px-6 py-4 hidden lg:table-cell">Joined</th>
-                                            <th className="px-6 py-4">Actions</th>
+                                            <th className="px-5 py-3">Account Name</th>
+                                            <th className="px-5 py-3 hidden md:table-cell">Email Address</th>
+                                            <th className="px-5 py-3">Role</th>
+                                            <th className="px-5 py-3 hidden lg:table-cell">Joined</th>
+                                            <th className="px-5 py-3 text-right">Manage</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                        {users.map(u => (
-                                            <tr key={u._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                                <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{u.name}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{u.email}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded text-[10px] font-black uppercase ${u.isAdmin ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}`}>
-                                                        {u.isAdmin ? 'Admin' : 'Customer'}
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                        {users.map((u) => (
+                                            <tr key={u._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                                                <td className="px-5 py-3 font-bold text-slate-900 dark:text-white">
+                                                    {u.name}
+                                                </td>
+                                                <td className="px-5 py-3 hidden md:table-cell text-slate-500">
+                                                    {u.email}
+                                                </td>
+                                                <td className="px-5 py-3">
+                                                    <span
+                                                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                                            u.isAdmin
+                                                                ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
+                                                                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                                                        }`}
+                                                    >
+                                                        {u.isAdmin ? 'Admin' : 'Member'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">{new Date(u.createdAt).toLocaleDateString()}</td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-5 py-3 hidden lg:table-cell text-slate-500">
+                                                    {new Date(u.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-5 py-3 text-right">
                                                     {!u.isAdmin && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleDeleteUser(u._id)}
-                                                            className="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50">
-                                                            <FaTrash />
+                                                            className="p-1.5 text-slate-400 hover:text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                                            title="Delete User"
+                                                        >
+                                                            <FaTrash className="w-3.5 h-3.5" />
                                                         </button>
                                                     )}
                                                 </td>
@@ -421,110 +582,110 @@ const AdminDashboard = () => {
                             </div>
                         </div>
                     )}
-
                 </main>
 
-                {/* Footer */}
-                <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-colors duration-500">
-                    <div className="px-8 py-6">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                            {/* Left side - Copyright */}
-                            <div className="text-center md:text-left">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    © {new Date().getFullYear()} <span className="font-bold text-gray-900 dark:text-white">KENNSON MATELEPHONE</span>. All rights reserved.
-                                </p>
-                            </div>
-
-                            {/* Right side - Admin info */}
-                            <div className="flex flex-col sm:flex-row items-center gap-4 text-sm">
-                                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-                                    <span>Admin Panel</span>
-                                </div>
-                                <div className="hidden sm:block h-4 w-px bg-gray-200 dark:bg-gray-700"></div>
-                                <span className="text-gray-500 dark:text-gray-400">
-                                    Logged in as <span className="font-semibold text-gray-900 dark:text-white">{user?.name}</span>
-                                </span>
-                            </div>
-                        </div>
+                {/* Dashboard Footer */}
+                <footer className="border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-4 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-4">
+                    <p>&copy; {new Date().getFullYear()} Kennson Matelephone. Operational Back-Office Console.</p>
+                    <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <span>Logged in as <strong>{user?.name}</strong></span>
                     </div>
                 </footer>
-            </div >
+            </div>
 
-            {/* Order Details Modal */}
+            {/* ORDER DETAILS MODAL */}
             {isOrderModalOpen && selectedOrder && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
-                        <div className="p-4 md:p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-900 z-10">
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-900 z-10">
                             <div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Order Details</h3>
-                                <p className="text-sm text-gray-500">#{selectedOrder._id}</p>
+                                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                                    Order #{selectedOrder._id?.slice(-8).toUpperCase()}
+                                </h3>
+                                <p className="text-xs text-slate-400">
+                                    Placed on {new Date(selectedOrder.createdAt).toLocaleString()}
+                                </p>
                             </div>
-                            <button onClick={() => setIsOrderModalOpen(false)} className="text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white"><FaTimes /></button>
+                            <button
+                                onClick={() => setIsOrderModalOpen(false)}
+                                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                            >
+                                <FaTimes className="w-4 h-4" />
+                            </button>
                         </div>
-                        <div className="p-4 md:p-6 space-y-8">
-                            {/* Order Status & Payment */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                    <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">Payment Info</h4>
-                                    <div className="space-y-1">
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600 dark:text-gray-300">Method</span>
-                                            <span className="text-sm font-bold text-gray-900 dark:text-white">{selectedOrder.paymentMethod}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600 dark:text-gray-300">Total Amount</span>
-                                            <span className="text-sm font-bold text-gray-900 dark:text-white">Tsh {selectedOrder.totalPrice.toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600 dark:text-gray-300">Payment Status</span>
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${selectedOrder.isPaid ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                                                {selectedOrder.isPaid ? 'PAID' : 'UNPAID'}
-                                            </span>
-                                        </div>
+
+                        <div className="p-5 space-y-6 text-xs">
+                            {/* Summary Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-150 dark:border-slate-750 space-y-1.5">
+                                    <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px] block text-slate-400">
+                                        Payment Overview
+                                    </span>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Method:</span>
+                                        <span className="font-semibold text-slate-900 dark:text-white">{selectedOrder.paymentMethod}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Total Price:</span>
+                                        <span className="font-bold text-slate-900 dark:text-white">Tsh {selectedOrder.totalPrice?.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Status:</span>
+                                        <span className="font-bold text-emerald-600">CONFIRMED</span>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                    <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">Customer & Shipping</h4>
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-bold text-gray-900 dark:text-white">{selectedOrder.shippingAddress?.address}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">{selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.zipCode}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">Phone: {selectedOrder.shippingAddress?.phone}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">Customer: <span className="font-bold">{selectedOrder.user?.name}</span></p>
-                                        <p className="text-xs text-gray-400">{selectedOrder.user?.email}</p>
-                                    </div>
+
+                                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-150 dark:border-slate-750 space-y-1.5">
+                                    <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px] block text-slate-400">
+                                        Customer &amp; Address
+                                    </span>
+                                    <p className="font-semibold text-slate-900 dark:text-white">{selectedOrder.user?.name || 'Customer'}</p>
+                                    <p className="text-slate-500">{selectedOrder.shippingAddress?.address}, {selectedOrder.shippingAddress?.city}</p>
+                                    <p className="text-slate-500">Phone: {selectedOrder.shippingAddress?.phone}</p>
                                 </div>
                             </div>
 
                             {/* Order Items */}
                             <div>
-                                <h4 className="text-xs font-bold uppercase text-gray-400 mb-4">Order Items ({selectedOrder.orderItems.length})</h4>
-                                <div className="space-y-4">
-                                    {selectedOrder.orderItems.map((item, index) => (
-                                        <div key={index} className="flex items-center space-x-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors border border-gray-100 dark:border-gray-800">
-                                            <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover bg-white" />
-                                            <div className="flex-1">
-                                                <h5 className="font-bold text-gray-900 dark:text-white text-sm">{item.name}</h5>
-                                                <p className="text-xs text-gray-500">Qty: {item.quantity} x Tsh {item.price.toLocaleString()}</p>
+                                <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[10px] block text-slate-400 mb-2">
+                                    Enclosed Items ({selectedOrder.orderItems?.length || 0})
+                                </span>
+                                <div className="space-y-2">
+                                    {selectedOrder.orderItems?.map((item, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-150 dark:border-slate-750"
+                                        >
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                className="w-10 h-10 rounded-md object-cover bg-white"
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-slate-900 dark:text-white truncate">
+                                                    {item.name}
+                                                </h4>
+                                                <span className="text-slate-400 text-[11px]">
+                                                    Qty: {item.quantity} × Tsh {item.price?.toLocaleString()}
+                                                </span>
                                             </div>
-                                            <div className="font-bold text-gray-900 dark:text-white text-sm">
+                                            <span className="font-bold text-slate-900 dark:text-white">
                                                 Tsh {(item.price * item.quantity).toLocaleString()}
-                                            </div>
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                            {/* Status Change Control */}
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-gray-500">Status:</span>
+                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Change Status:</span>
                                     <select
                                         value={selectedOrder.status}
                                         onChange={(e) => handleStatusUpdate(selectedOrder._id, e.target.value)}
-                                        className={`text-sm font-bold px-3 py-1.5 rounded-lg outline-none cursor-pointer border-none ${selectedOrder.status === 'Completed' ? 'bg-green-100 text-green-600' :
-                                            selectedOrder.status === 'Shipping' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'
-                                            }`}
+                                        className="px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md font-semibold text-slate-900 dark:text-white"
                                     >
                                         <option value="Pending">Pending</option>
                                         <option value="Shipping">Shipping</option>
@@ -532,8 +693,11 @@ const AdminDashboard = () => {
                                         <option value="Cancelled">Cancelled</option>
                                     </select>
                                 </div>
-                                <button onClick={() => setIsOrderModalOpen(false)} className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-2 rounded-xl font-bold hover:bg-black dark:hover:bg-gray-100 transition-all text-sm">
-                                    Close Details
+                                <button
+                                    onClick={() => setIsOrderModalOpen(false)}
+                                    className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-xs font-semibold"
+                                >
+                                    Dismiss
                                 </button>
                             </div>
                         </div>
@@ -541,76 +705,114 @@ const AdminDashboard = () => {
                 </div>
             )}
 
-            {/* Product Modal */}
-            {
-                isProductModalOpen && (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in mx-4 md:mx-0">
-                            <div className="p-4 md:p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
-                                <button onClick={() => setIsProductModalOpen(false)} className="text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white"><FaTimes /></button>
-                            </div>
-                            <form onSubmit={handleProductSubmit} className="p-4 md:p-6 space-y-4">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-1">Product Name</label>
-                                        <input
-                                            type="text" required value={productForm.name}
-                                            onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none text-gray-900 dark:text-white"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-1">Price (Tsh)</label>
-                                        <input
-                                            type="number" required value={productForm.price}
-                                            onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none text-gray-900 dark:text-white"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-1">Image URL</label>
-                                        <input
-                                            type="text" required value={productForm.image}
-                                            onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none text-gray-900 dark:text-white"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-1">Category</label>
-                                        <select
-                                            value={productForm.category}
-                                            onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none text-gray-900 dark:text-white"
-                                        >
-                                            <option value="">Select Category</option>
-                                            <option value="Flagship">Flagship</option>
-                                            <option value="Foldable">Foldable</option>
-                                            <option value="Budget">Budget</option>
-                                            <option value="Mid-range">Mid-range</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase mb-1">Description</label>
-                                    <textarea
-                                        required rows="3" value={productForm.description}
-                                        onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none resize-none text-gray-900 dark:text-white"
-                                    ></textarea>
-                                </div>
-                                <div className="pt-4 flex space-x-4">
-                                    <button type="button" onClick={() => setIsProductModalOpen(false)} className="flex-1 py-3 border border-gray-100 dark:border-gray-700 rounded-xl font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800">Cancel</button>
-                                    <button type="submit" className="flex-1 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-black dark:hover:bg-gray-100">Save Product</button>
-                                </div>
-                            </form>
+            {/* PRODUCT ADD / EDIT MODAL */}
+            {isProductModalOpen && (
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-2xl">
+                        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                            <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                                {editingProduct ? 'Edit Catalog Hardware' : 'Add New Hardware to Catalog'}
+                            </h3>
+                            <button
+                                onClick={() => setIsProductModalOpen(false)}
+                                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                            >
+                                <FaTimes className="w-4 h-4" />
+                            </button>
                         </div>
+
+                        <form onSubmit={handleProductSubmit} className="p-5 space-y-4 text-xs">
+                            <div className="space-y-1">
+                                <label className="font-semibold text-slate-700 dark:text-slate-300">
+                                    Model / Device Name <span className="text-rose-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={productForm.name}
+                                    onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="font-semibold text-slate-700 dark:text-slate-300">
+                                        Price (Tsh) <span className="text-rose-500">*</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        required
+                                        value={productForm.price}
+                                        onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="font-semibold text-slate-700 dark:text-slate-300">
+                                        Category <span className="text-rose-500">*</span>
+                                    </label>
+                                    <select
+                                        value={productForm.category}
+                                        onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                        required
+                                    >
+                                        <option value="">Select Category</option>
+                                        <option value="Flagship">Flagship</option>
+                                        <option value="Foldable">Foldable</option>
+                                        <option value="Budget">Budget</option>
+                                        <option value="Mid-range">Mid-range</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="font-semibold text-slate-700 dark:text-slate-300">
+                                    Image URL <span className="text-rose-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={productForm.image}
+                                    onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                />
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="font-semibold text-slate-700 dark:text-slate-300">
+                                    Description &amp; Warranty Terms <span className="text-rose-500">*</span>
+                                </label>
+                                <textarea
+                                    required
+                                    rows={4}
+                                    value={productForm.description}
+                                    onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-rose-500 resize-none"
+                                />
+                            </div>
+
+                            <div className="pt-2 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsProductModalOpen(false)}
+                                    className="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white rounded-lg font-semibold shadow-xs transition-colors"
+                                >
+                                    Save Product
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )
-            }
-        </div >
+                </div>
+            )}
+        </div>
     );
 };
 

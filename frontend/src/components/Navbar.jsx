@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes, FaSignOutAlt, FaSun, FaMoon, FaBox } from 'react-icons/fa';
+import {
+    FaSearch,
+    FaShoppingCart,
+    FaUser,
+    FaBars,
+    FaTimes,
+    FaSignOutAlt,
+    FaSun,
+    FaMoon,
+    FaBox,
+    FaShieldAlt
+} from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -20,167 +31,272 @@ const Navbar = () => {
         navigate('/');
     };
 
-    // Handle scroll effect for navbar
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 20) {
-                setScrolled(true);
-            } else {
-                setScrolled(false);
-            }
+            setScrolled(window.scrollY > 15);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const toggleMenu = () => setIsOpen(!isOpen);
+    // Prevent background scrolling when mobile drawer is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     const navLinks = [
         { name: 'Home', path: '/' },
-        { name: 'Products', path: '/products' },
-        { name: 'About', path: '/about' },
+        { name: 'Collection', path: '/products' },
+        { name: 'Our Mission', path: '/about' },
         { name: 'Contact', path: '/contact' },
     ];
 
+    const cartCount = getCartItemsCount();
+
     return (
-        <nav
-            className={`fixed w-full z-50 top-0 left-0 transition-all duration-500 ${scrolled
-                ? 'bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl shadow-2xl py-2'
-                : 'bg-transparent py-5'
+        <>
+            <header
+                className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+                    scrolled
+                        ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm border-b border-slate-200/80 dark:border-slate-800/80 py-3'
+                        : 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm border-b border-slate-100 dark:border-slate-850 py-4'
                 }`}
-        >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                    {/* Logo */}
-                    <Link to="/" className="flex-shrink-0 flex items-center group">
-                        <span className="text-xl md:text-2xl font-black tracking-tighter bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent group-hover:from-pink-500 group-hover:to-purple-500 transition-all duration-300 truncate max-w-[200px] md:max-w-none uppercase">
-                            KENNSON MATELEPHONE
-                        </span>
-                        <div className="h-2 w-2 rounded-full bg-pink-600 ml-1.5 mt-3 animate-pulse"></div>
-                    </Link>
-
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex space-x-10 items-center">
-                        {navLinks.map((link) => (
-                            <NavLink
-                                key={link.name}
-                                to={link.path}
-                                className={({ isActive }) =>
-                                    `text-xs uppercase tracking-[0.2em] font-black transition-all duration-300 relative group py-2 ${isActive
-                                        ? 'text-pink-600'
-                                        : 'text-gray-900 dark:text-gray-100 hover:text-pink-600'
-                                    }`
-                                }
-                            >
-                                {({ isActive }) => (
-                                    <>
-                                        {link.name}
-                                        <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-pink-600 transform origin-left transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
-                                    </>
-                                )}
-                            </NavLink>
-                        ))}
-                    </div>
-
-                    {/* Icons */}
-                    <div className="hidden md:flex items-center space-x-6">
-                        {/* Theme Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2.5 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg border border-gray-200 dark:border-gray-700"
-                            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-12">
+                        {/* Brand Logo & Seal */}
+                        <Link
+                            to="/"
+                            className="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-rose-500 rounded-lg p-1"
                         >
-                            {isDarkMode ? <FaSun className="h-4 w-4 text-amber-500" /> : <FaMoon className="h-4 w-4 text-blue-600" />}
-                        </button>
-
-                        <button
-                            onClick={() => setIsSearchOpen(true)}
-                            className="text-gray-900 dark:text-gray-100 hover:text-pink-600 transition-all duration-300 hover:scale-110"
-                            title="Search products"
-                        >
-                            <FaSearch className="h-5 w-5" />
-                        </button>
-
-                        <Link to="/cart" className="text-gray-900 dark:text-gray-100 hover:text-pink-600 transition-all duration-300 hover:scale-110 relative">
-                            <FaShoppingCart className="h-5 w-5" />
-                            <span className="absolute -top-2 -right-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-[10px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow-2xl ring-2 ring-white dark:ring-gray-900">
-                                {getCartItemsCount()}
-                            </span>
+                            <div className="w-9 h-9 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold text-base tracking-wider shadow-sm transition-transform duration-200 group-hover:scale-105">
+                                K
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-none">
+                                    Kennson <span className="font-medium text-rose-600 dark:text-rose-400">Matelephone</span>
+                                </span>
+                                <span className="text-[10px] uppercase font-semibold tracking-widest text-slate-500 dark:text-slate-400 mt-0.5">
+                                    Authentic Mobile Tech
+                                </span>
+                            </div>
                         </Link>
 
-                        {user ? (
-                            <div className="flex items-center space-x-6 pl-4 border-l border-gray-200 dark:border-gray-800">
-                                <Link to="/orders" className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-pink-600 transition-colors">My Orders</Link>
-                                {user.isAdmin && (
-                                    <Link to="/admin" className="text-pink-600 font-black text-[10px] uppercase tracking-widest flex items-center group px-3 py-2 rounded-xl bg-pink-50 dark:bg-pink-900/20 border border-pink-100 dark:border-pink-900/30 hover:bg-pink-100 dark:hover:bg-pink-900/40 transition-all">
-                                        <span className="mr-1.5">Admin</span>
-                                        <div className="h-1.5 w-1.5 rounded-full bg-pink-600 animate-pulse"></div>
-                                    </Link>
-                                )}
-                                <div className="flex items-center space-x-4">
-                                    <span className="text-xs font-black text-gray-700 dark:text-gray-300 hidden lg:block uppercase tracking-widest">Hi, {user.name.split(' ')[0]}</span>
-                                    <button onClick={handleLogout} className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-400 transition-all duration-300 shadow-md" title="Logout">
-                                        <FaSignOutAlt className="h-4 w-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <Link to="/login" className="text-gray-900 dark:text-gray-100 hover:text-pink-600 transition-all duration-300 hover:scale-110 p-2.5 rounded-2xl bg-gray-100 dark:bg-gray-800">
-                                <FaUser className="h-4 w-4" />
-                            </Link>
-                        )}
-                    </div>
+                        {/* Desktop Navigation Links */}
+                        <nav className="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+                            {navLinks.map((link) => (
+                                <NavLink
+                                    key={link.name}
+                                    to={link.path}
+                                    className={({ isActive }) =>
+                                        `px-3.5 py-2 text-sm font-medium rounded-lg transition-colors duration-150 ${
+                                            isActive
+                                                ? 'text-rose-600 dark:text-rose-400 bg-rose-50/70 dark:bg-rose-950/40 font-semibold'
+                                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                                        }`
+                                    }
+                                >
+                                    {link.name}
+                                </NavLink>
+                            ))}
+                        </nav>
 
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center space-x-4">
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 transition-all"
-                        >
-                            {isDarkMode ? <FaSun className="h-4 w-4 text-amber-500" /> : <FaMoon className="h-4 w-4 text-blue-600" />}
-                        </button>
-                        <button
-                            onClick={toggleMenu}
-                            className="text-gray-900 dark:text-gray-100 hover:text-pink-600 focus:outline-none transition-colors p-1"
-                        >
-                            {isOpen ? <FaTimes className="h-7 w-7" /> : <FaBars className="h-7 w-7" />}
-                        </button>
+                        {/* Desktop Action Utilities */}
+                        <div className="hidden md:flex items-center gap-2 lg:gap-3">
+                            {/* Search Button */}
+                            <button
+                                onClick={() => setIsSearchOpen(true)}
+                                aria-label="Search devices"
+                                className="flex items-center gap-2 px-3 py-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-slate-200/70 dark:hover:bg-slate-700/80 rounded-lg border border-slate-200/60 dark:border-slate-700/60 transition-colors"
+                            >
+                                <FaSearch className="w-3.5 h-3.5 text-slate-400" />
+                                <span className="hidden lg:inline">Search...</span>
+                                <kbd className="hidden lg:inline text-[10px] font-mono bg-white dark:bg-slate-900 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                                    /
+                                </kbd>
+                            </button>
+
+                            {/* Theme Toggle */}
+                            <button
+                                onClick={toggleTheme}
+                                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                                className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                title={isDarkMode ? 'Light mode' : 'Dark mode'}
+                            >
+                                {isDarkMode ? (
+                                    <FaSun className="w-4 h-4 text-amber-400" />
+                                ) : (
+                                    <FaMoon className="w-4 h-4 text-slate-600" />
+                                )}
+                            </button>
+
+                            {/* Cart Link with Badge */}
+                            <Link
+                                to="/cart"
+                                aria-label={`Shopping cart with ${cartCount} items`}
+                                className="relative p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            >
+                                <FaShoppingCart className="w-4 h-4" />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center shadow-sm">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </Link>
+
+                            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 mx-1" />
+
+                            {/* User Authentication Status */}
+                            {user ? (
+                                <div className="flex items-center gap-2">
+                                    <Link
+                                        to="/orders"
+                                        className="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                    >
+                                        My Orders
+                                    </Link>
+                                    {user.isAdmin && (
+                                        <Link
+                                            to="/admin"
+                                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 px-2.5 py-1.5 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                                        >
+                                            <FaShieldAlt className="w-3 h-3 text-rose-600" />
+                                            Admin
+                                        </Link>
+                                    )}
+                                    <div className="flex items-center gap-2 pl-2">
+                                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                            {user.name.split(' ')[0]}
+                                        </span>
+                                        <button
+                                            onClick={handleLogout}
+                                            aria-label="Log out"
+                                            className="p-1.5 text-slate-400 hover:text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                                            title="Sign Out"
+                                        >
+                                            <FaSignOutAlt className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <Link
+                                        to="/login"
+                                        className="text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                    >
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        to="/register"
+                                        className="text-xs font-semibold text-white bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 px-3.5 py-2 rounded-lg shadow-sm transition-colors"
+                                    >
+                                        Register
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Mobile Actions: Search, Theme, Hamburger */}
+                        <div className="flex items-center gap-1.5 md:hidden">
+                            <button
+                                onClick={() => setIsSearchOpen(true)}
+                                aria-label="Search"
+                                className="p-2 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                            >
+                                <FaSearch className="w-4 h-4" />
+                            </button>
+
+                            <Link
+                                to="/cart"
+                                aria-label={`Cart with ${cartCount} items`}
+                                className="relative p-2 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                            >
+                                <FaShoppingCart className="w-4 h-4" />
+                                {cartCount > 0 && (
+                                    <span className="absolute top-1 right-1 bg-rose-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </Link>
+
+                            <button
+                                onClick={toggleTheme}
+                                aria-label="Toggle color theme"
+                                className="p-2 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                            >
+                                {isDarkMode ? (
+                                    <FaSun className="w-4 h-4 text-amber-400" />
+                                ) : (
+                                    <FaMoon className="w-4 h-4 text-slate-600" />
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => setIsOpen(!isOpen)}
+                                aria-label={isOpen ? 'Close menu' : 'Open menu'}
+                                className="p-2 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none"
+                            >
+                                {isOpen ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile Drawer Backdrop */}
             <div
-                className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-500 md:hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                    }`}
+                className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 md:hidden transition-opacity duration-300 ${
+                    isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
                 onClick={() => setIsOpen(false)}
             />
 
-            {/* Mobile Menu Panel */}
+            {/* Mobile Navigation Drawer */}
             <div
-                className={`fixed top-0 right-0 h-full w-4/5 max-sm:w-3/4 max-w-sm bg-white dark:bg-gray-950 shadow-[0_0_50px_rgba(0,0,0,0.5)] z-50 transform transition-transform duration-500 ease-in-out md:hidden flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
-                    }`}
+                className={`fixed top-0 right-0 bottom-0 w-4/5 max-w-sm bg-white dark:bg-slate-900 shadow-2xl z-50 md:hidden flex flex-col transform transition-transform duration-300 ease-out border-l border-slate-200 dark:border-slate-800 ${
+                    isOpen ? 'translate-x-0' : 'translate-x-full'
+                }`}
             >
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-900">
-                    <span className="text-lg font-black tracking-tighter bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent uppercase">
-                        KENNSON
-                    </span>
-                    <button onClick={() => setIsOpen(false)} className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-red-500 transition-all">
-                        <FaTimes className="h-6 w-6" />
+                {/* Drawer Header */}
+                <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold text-sm">
+                            K
+                        </div>
+                        <span className="font-bold text-slate-900 dark:text-white">Kennson</span>
+                    </div>
+                    <button
+                        onClick={() => setIsOpen(false)}
+                        aria-label="Close navigation"
+                        className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+                    >
+                        <FaTimes className="w-5 h-5" />
                     </button>
                 </div>
 
-                <div className="px-8 py-10 flex flex-col space-y-8 overflow-y-auto flex-grow">
-                    <div className="flex flex-col space-y-6">
+                {/* Drawer Links */}
+                <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+                    <div className="space-y-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 px-3">
+                            Navigation
+                        </p>
                         {navLinks.map((link) => (
                             <NavLink
                                 key={link.name}
                                 to={link.path}
                                 onClick={() => setIsOpen(false)}
                                 className={({ isActive }) =>
-                                    `text-xl font-black uppercase tracking-[0.2em] transition-all duration-300 border-b border-gray-50 dark:border-gray-900 pb-4 ${isActive
-                                        ? 'text-pink-600'
-                                        : 'text-gray-900 dark:text-gray-100'
+                                    `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                                        isActive
+                                            ? 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 font-semibold'
+                                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                                     }`
                                 }
                             >
@@ -189,58 +305,87 @@ const Navbar = () => {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <Link to="/cart" onClick={() => setIsOpen(false)} className="flex flex-col items-center justify-center p-6 rounded-[2.5rem] bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-gray-900 dark:text-gray-100 group">
-                            <div className="relative mb-3">
-                                <FaShoppingCart className="h-6 w-6 group-hover:text-pink-600 transition-colors" />
-                                <span className="absolute -top-2 -right-2 bg-pink-600 text-white text-[10px] font-black rounded-full h-5 w-5 flex items-center justify-center shadow-lg">{getCartItemsCount()}</span>
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Cart</span>
+                    <div className="border-t border-slate-100 dark:border-slate-800 pt-6 space-y-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 px-3">
+                            Account &amp; Orders
+                        </p>
+                        <Link
+                            to="/cart"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        >
+                            <span className="flex items-center gap-2.5">
+                                <FaShoppingCart className="w-4 h-4 text-slate-400" />
+                                Cart
+                            </span>
+                            {cartCount > 0 && (
+                                <span className="bg-rose-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                                    {cartCount} items
+                                </span>
+                            )}
                         </Link>
-
-                        <button onClick={toggleTheme} className="flex flex-col items-center justify-center p-6 rounded-[2.5rem] bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-gray-900 dark:text-gray-100 group font-black">
-                            {isDarkMode ? <FaSun className="h-6 w-6 text-amber-500 mb-3" /> : <FaMoon className="h-6 w-6 text-blue-600 mb-3" />}
-                            <span className="text-[10px] uppercase tracking-widest">{isDarkMode ? 'Light' : 'Dark'}</span>
-                        </button>
-                    </div>
-
-                    <div className="pt-6">
                         {user ? (
-                            <div className="flex flex-col space-y-4">
-                                <Link to="/orders" onClick={() => setIsOpen(false)} className="flex items-center justify-center space-x-3 p-5 rounded-[2.5rem] bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-black uppercase tracking-widest ">
-                                    <FaBox className="h-4 w-4" />
-                                    <span>My Orders</span>
+                            <>
+                                <Link
+                                    to="/orders"
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                >
+                                    <FaBox className="w-4 h-4 text-slate-400" />
+                                    My Orders
                                 </Link>
                                 {user.isAdmin && (
-                                    <Link to="/admin" onClick={() => setIsOpen(false)} className="flex items-center justify-center space-x-3 p-5 rounded-[2.5rem] bg-pink-600 text-white font-black uppercase tracking-widest shadow-xl shadow-pink-600/20">
-                                        <FaUser className="h-4 w-4" />
-                                        <span>Admin Panel</span>
+                                    <Link
+                                        to="/admin"
+                                        onClick={() => setIsOpen(false)}
+                                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                                    >
+                                        <FaShieldAlt className="w-4 h-4 text-rose-500" />
+                                        Admin Panel
                                     </Link>
                                 )}
-                                <button onClick={() => { handleLogout(); setIsOpen(false); }} className="flex items-center justify-center space-x-3 p-5 rounded-[2.5rem] bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black uppercase tracking-widest shadow-xl">
-                                    <FaSignOutAlt className="h-4 w-4" />
-                                    <span>Logout</span>
+                                <button
+                                    onClick={() => {
+                                        handleLogout();
+                                        setIsOpen(false);
+                                    }}
+                                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 text-left"
+                                >
+                                    <FaSignOutAlt className="w-4 h-4" />
+                                    Sign Out
                                 </button>
-                            </div>
+                            </>
                         ) : (
-                            <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center justify-center space-x-3 p-5 rounded-[2.5rem] bg-gradient-to-r from-pink-600 to-purple-600 text-white font-black uppercase tracking-widest shadow-xl shadow-pink-600/20">
-                                <FaUser className="h-4 w-4" />
-                                <span>Sign In</span>
-                            </Link>
+                            <div className="pt-2 space-y-2">
+                                <Link
+                                    to="/login"
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-full flex items-center justify-center py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                                >
+                                    Sign In
+                                </Link>
+                                <Link
+                                    to="/register"
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-full flex items-center justify-center py-2.5 text-sm font-semibold text-white bg-slate-900 dark:bg-white dark:text-slate-900 rounded-lg shadow-sm"
+                                >
+                                    Create Account
+                                </Link>
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <div className="p-8 text-center bg-gray-50 dark:bg-gray-900/50">
-                    <p className="text-[8px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.4em]">
-                        KENNSON MATELEPHONE &copy; {new Date().getFullYear()}
-                    </p>
+                {/* Drawer Footer */}
+                <div className="p-6 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400">
+                    <p className="font-medium text-slate-600 dark:text-slate-400">Kennson Matelephone</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">East Africa's Certified Mobile Partner</p>
                 </div>
             </div>
 
-            {/* Search Modal */}
+            {/* Accessible Search Dialog */}
             <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-        </nav>
+        </>
     );
 };
 
