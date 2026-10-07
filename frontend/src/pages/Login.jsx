@@ -34,9 +34,11 @@ const Login = () => {
             <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-8 sm:p-10 shadow-xs space-y-6">
                 {/* Brand Seal Header */}
                 <div className="text-center space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold text-base mx-auto mb-3 shadow-xs">
-                        K
-                    </div>
+                    <img
+                        src="/logo.svg"
+                        alt="Kennson Logo"
+                        className="w-10 h-10 rounded-xl mx-auto mb-3 shadow-xs"
+                    />
                     <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                         Sign In to Your Account
                     </h1>

@@ -98,9 +98,11 @@ const Footer = () => {
                     {/* Brand Info & Mission */}
                     <div className="lg:col-span-2 space-y-4">
                         <Link to="/" className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-white text-slate-900 flex items-center justify-center font-bold text-sm">
-                                K
-                            </div>
+                            <img
+                                src="/logo.svg"
+                                alt="Kennson Logo"
+                                className="w-8 h-8 rounded-lg shadow-xs"
+                            />
                             <span className="text-lg font-bold text-white tracking-tight">
                                 Kennson <span className="text-rose-400 font-medium">Matelephone</span>
                             </span>

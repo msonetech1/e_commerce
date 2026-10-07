@@ -76,9 +76,11 @@ const Navbar = () => {
                             to="/"
                             className="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-rose-500 rounded-lg p-1"
                         >
-                            <div className="w-9 h-9 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold text-base tracking-wider shadow-sm transition-transform duration-200 group-hover:scale-105">
-                                K
-                            </div>
+                            <img
+                                src="/logo.svg"
+                                alt="Kennson Logo"
+                                className="w-9 h-9 rounded-lg shadow-xs transition-transform duration-200 group-hover:scale-105"
+                            />
                             <div className="flex flex-col">
                                 <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                                     Kennson <span className="font-medium text-rose-600 dark:text-rose-400">Matelephone</span>
@@ -267,9 +269,11 @@ const Navbar = () => {
                 {/* Drawer Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center font-bold text-sm">
-                            K
-                        </div>
+                        <img
+                            src="/logo.svg"
+                            alt="Kennson Logo"
+                            className="w-8 h-8 rounded-lg shadow-xs"
+                        />
                         <span className="font-bold text-slate-900 dark:text-white">Kennson</span>
                     </div>
                     <button
