@@ -68,24 +68,74 @@ Text Muted    →  #AAAACC  (Soft Lavender)
 
 ## 🛠️ Tech Stack
 
-- **Frontend** — HTML5, CSS3, JavaScript
-- **Hosting** — [Vercel](https://vercel.com)
-- **Design** — Custom dark-theme UI system
+- **Frontend** — React 19, Vite, Tailwind CSS, React Router, React Hot Toast
+- **Backend** — Node.js, Express, MongoDB (Mongoose), JWT, Nodemailer
+- **Architecture** — Monorepo (Clean separation into `/frontend` and `/backend`)
+
+---
+
+## 📁 Project Structure
+
+```text
+e_commerce/
+├── backend/                # Express & Node.js API
+│   ├── config/             # DB & server configuration
+│   ├── controllers/        # Request handlers & logic
+│   ├── middleware/         # Auth & validation middleware
+│   ├── models/             # Mongoose schemas
+│   ├── routes/             # API routes
+│   ├── utils/              # Helper utilities
+│   ├── server.js           # Express app entry point
+│   ├── .env.example        # Backend environment variables template
+│   └── package.json
+│
+├── frontend/               # React & Vite application
+│   ├── public/             # Static assets
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── context/        # React context (Auth, Cart, Theme)
+│   │   ├── pages/          # Application views/pages
+│   │   ├── services/       # Axios API client
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── .env.example        # Frontend environment variables template
+│   ├── vite.config.js
+│   └── package.json
+│
+├── package.json            # Root scripts to run both apps
+└── README.md
+```
 
 ---
 
 ## 📦 Getting Started
 
+### 1. Install Dependencies
+Install all dependencies for both backend and frontend from the root:
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/kennson-matelephone.git
-
-# Navigate into the project
-cd kennson-matelephone
-
-# Open in browser
-open index.html
+npm run install:all
 ```
+
+### 2. Configure Environment Variables
+- In `backend/`: copy `.env.example` to `.env` and add your MongoDB URI and JWT Secret.
+- In `frontend/`: copy `.env.example` to `.env` and configure `VITE_API_URL`.
+
+### 3. Run the Project
+
+- **Run both Backend and Frontend together**:
+  ```bash
+  npm run dev
+  ```
+
+- **Run Backend only**:
+  ```bash
+  npm run dev:backend
+  ```
+
+- **Run Frontend only**:
+  ```bash
+  npm run dev:frontend
+  ```
 
 ---
 
