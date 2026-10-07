@@ -679,7 +679,7 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Status Change Control */}
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
                                 <div className="flex items-center gap-2">
                                     <span className="font-semibold text-slate-600 dark:text-slate-400">Change Status:</span>
                                     <select
@@ -708,8 +708,8 @@ const AdminDashboard = () => {
             {/* PRODUCT ADD / EDIT MODAL */}
             {isProductModalOpen && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-2xl">
-                        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-900 z-10">
                             <h3 className="text-base font-bold text-slate-900 dark:text-white">
                                 {editingProduct ? 'Edit Catalog Hardware' : 'Add New Hardware to Catalog'}
                             </h3>

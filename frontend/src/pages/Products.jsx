@@ -46,7 +46,7 @@ const Products = () => {
 
                 {/* Filter Bar */}
                 <div className="flex items-center justify-between flex-wrap gap-4 py-4 mb-8 border-y border-slate-200/80 dark:border-slate-800/80">
-                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar max-w-full">
                         {categories.map((category) => {
                             const count = category === 'All'
                                 ? products.length

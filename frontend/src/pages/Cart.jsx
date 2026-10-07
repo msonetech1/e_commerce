@@ -55,32 +55,34 @@ const Cart = () => {
                             {cart.map((item) => (
                                 <div
                                     key={item._id}
-                                    className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-5 shadow-xs"
+                                    className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 shadow-xs"
                                 >
-                                    <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200/50 dark:border-slate-750">
-                                        <img
-                                            src={item.image}
-                                            alt={item.name}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                e.target.src = 'https://placehold.co/100x100?text=Device';
-                                            }}
-                                        />
+                                    <div className="flex items-center gap-3.5 sm:gap-4 w-full sm:w-auto flex-1 min-w-0">
+                                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200/50 dark:border-slate-750">
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    e.target.src = 'https://placehold.co/100x100?text=Device';
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                                                {item.name}
+                                            </h3>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                Tsh {item.price?.toLocaleString()} each
+                                            </p>
+                                            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">
+                                                <FaShieldAlt className="w-2.5 h-2.5" /> 1-Year Local Warranty
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <div className="flex-1 text-center sm:text-left min-w-0">
-                                        <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                                            {item.name}
-                                        </h3>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                            Tsh {item.price?.toLocaleString()} each
-                                        </p>
-                                        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 mt-1">
-                                            <FaShieldAlt className="w-2.5 h-2.5" /> 1-Year Local Warranty
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
                                         {/* Quantity Pill */}
                                         <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 border border-slate-200/60 dark:border-slate-700">
                                             <button
@@ -103,8 +105,8 @@ const Cart = () => {
                                             </button>
                                         </div>
 
-                                        <div className="text-right min-w-[90px]">
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                                        <div className="text-right min-w-[80px] sm:min-w-[90px]">
+                                            <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white block">
                                                 Tsh {(item.price * item.quantity).toLocaleString()}
                                             </span>
                                         </div>

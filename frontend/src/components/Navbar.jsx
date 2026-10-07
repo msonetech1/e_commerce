@@ -74,18 +74,18 @@ const Navbar = () => {
                         {/* Brand Logo & Seal */}
                         <Link
                             to="/"
-                            className="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-rose-500 rounded-lg p-1"
+                            className="flex items-center gap-2 sm:gap-3 group focus-visible:ring-2 focus-visible:ring-rose-500 rounded-lg p-1 min-w-0"
                         >
                             <img
                                 src="/logo.svg"
                                 alt="Kennson Logo"
-                                className="w-9 h-9 rounded-lg shadow-xs transition-transform duration-200 group-hover:scale-105"
+                                className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg shadow-xs transition-transform duration-200 group-hover:scale-105 flex-shrink-0"
                             />
-                            <div className="flex flex-col">
-                                <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-none">
+                            <div className="flex flex-col min-w-0">
+                                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight leading-none truncate">
                                     Kennson <span className="font-medium text-rose-600 dark:text-rose-400">Matelephone</span>
                                 </span>
-                                <span className="text-[10px] uppercase font-semibold tracking-widest text-slate-500 dark:text-slate-400 mt-0.5">
+                                <span className="hidden sm:block text-[10px] uppercase font-semibold tracking-widest text-slate-500 dark:text-slate-400 mt-0.5">
                                     Authentic Mobile Tech
                                 </span>
                             </div>

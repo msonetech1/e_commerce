@@ -99,7 +99,7 @@ const ProductDetails = () => {
                 </nav>
 
                 {/* Main Product Showcase Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-10 shadow-xs">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-8 lg:p-10 shadow-xs">
                     {/* Image Column */}
                     <div className="lg:col-span-6 flex flex-col justify-center">
                         <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-750">
@@ -111,7 +111,7 @@ const ProductDetails = () => {
                                     e.target.src = 'https://placehold.co/800x600?text=Certified+Device';
                                 }}
                             />
-                            <div className="absolute top-4 left-4 flex gap-2">
+                            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-2">
                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-900/85 text-white backdrop-blur-xs">
                                     <FaShieldAlt className="w-3 h-3 text-emerald-400" />
                                     Verified Hardware
@@ -120,18 +120,18 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Assurance Badges Strip under photo */}
-                        <div className="grid grid-cols-3 gap-3 mt-4 text-center">
-                            <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-150 dark:border-slate-750">
-                                <span className="text-[11px] font-semibold text-slate-900 dark:text-white block">1-Year Warranty</span>
-                                <span className="text-[10px] text-slate-400">Official coverage</span>
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-3 sm:mt-4 text-center">
+                            <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-150 dark:border-slate-750">
+                                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-900 dark:text-white block truncate">1-Year Warranty</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 block truncate">Official coverage</span>
                             </div>
-                            <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-150 dark:border-slate-750">
-                                <span className="text-[11px] font-semibold text-slate-900 dark:text-white block">Free Transfer</span>
-                                <span className="text-[10px] text-slate-400">Data setup support</span>
+                            <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-150 dark:border-slate-750">
+                                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-900 dark:text-white block truncate">Free Transfer</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 block truncate">Data setup</span>
                             </div>
-                            <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-150 dark:border-slate-750">
-                                <span className="text-[11px] font-semibold text-slate-900 dark:text-white block">Factory Sealed</span>
-                                <span className="text-[10px] text-slate-400">Inspect before paying</span>
+                            <div className="p-2 sm:p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-150 dark:border-slate-750">
+                                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-900 dark:text-white block truncate">Factory Sealed</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 block truncate">Inspect on delivery</span>
                             </div>
                         </div>
                     </div>
